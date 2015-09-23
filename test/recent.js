@@ -1,21 +1,17 @@
+var test = require('tape')
 var pull = require('pull-stream')
 var window = require('../')
 
-var all = []
-
-require('tape')('window', function (t) {
+test('recent() with windowSize and windowTime', function (t) {
+  var all = []
 
   pull(
-    pull.Source(function () {
-    var i = 0
-
-      return function (abort, cb) {
-        if(abort) return cb(true)
-        setTimeout(function () {
-          cb(null, i++)
-        }, Math.random() * 75)
-      }
-    })(),
+    pull.count(),
+    pull.asyncMap(function (i, cb) {
+      setTimeout(function () {
+        cb(null, i)
+      }, Math.random() * 75)
+    }),
     pull.take(50),
     pull.through(function (e) {
       all.push(e)
